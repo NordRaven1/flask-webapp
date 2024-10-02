@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %} {{ article.article_title }} {% endblock %}
+
+{% block headExtraContent %}
+<style>
+        .cover-image {
+            width: 50%;
+            height: auto;
+        }
+        .article-title {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .author-name {
+            font-style: italic;
+            font-size: 1.2em;
+        }
+        .comments-section {
+            margin-top: 30px;
+        }
+
+    .toast {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-header {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-body {
+     border-top: 2px solid #000000;
+    padding: 10px;
+  }
+
+  .btn-close {
+    filter: brightness(0) invert(1);
+  }
+
+    </style>
+{% endblock %}
+
+
+{% block content %}
+
+{% include 'navbar_template.html' %}
+
+
+<div class="container mt-4">
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="article-tab" data-bs-toggle="tab" href="#article" role="tab" aria-controls="article" aria-selected="true">Статья</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="comments-tab" data-bs-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Комментарии</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="article" role="tabpanel" aria-labelledby="article-tab">
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+    <a href="{{ url_for('courses.show_course_page', course_id=course.course_id) }}" class="btn btn-secondary mb-3">
+        <i class="bi bi-arrow-left-circle-fill"></i> Назад к курсу</a>
+
+          {% if article.author == current_user or current_user.role == 'admin' %}
+            <div class="btn-group">
+            <a href="{{ url_for('courses.edit_article',course_id=course.course_id, article_id=article.article_id) }}" class="btn btn-sm btn-outline-secondary" role="button">
+                <i class="bi bi-pencil"></i></a>
+            <a href="{{ url_for('courses.delete_article', course_id=course.course_id, article_id=article.article_id) }}" class="btn btn-sm btn-outline-secondary" role="button">
+            <i class="bi bi-trash"></i></a>
+            </div>
+              {% endif %}
+        </div>
+
+            <div class="mt-3 text-center">
+                {% if image is none %}
+                    <img src="{{ url_for('static', filename='img/no_image.jpg') }}" class="cover-image" alt="Заглушка обложки">
+                {% else %}
+                    <img src="data:image/png;base64,{{ image|safe }}" alt="Обложка статьи" class="cover-image">
+                {% endif %}
+            </div>
+            <div class="mt-3">
+                <h1 class="article-title mt-3"> {{ article.article_title }} </h1>
+                <p class="author-name">Автор: {{ article.author.login }}</p>
+
+                {% for par in article.article_text.splitlines() %}
+                    <p> {{ par|trim }} </p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+
+            <div class="mt-3">
+                 <a href="{{ url_for('courses.show_course_page', course_id=course.course_id) }}" class="btn btn-secondary mb-3">
+        <i class="bi bi-arrow-left-circle-fill"></i> Назад к курсу</a>
+            </div>
+
+            <div class="comments-section">
+                <h3>Комментарии</h3>
+
+                <form action="{{ url_for('courses.add_comment', article_id=article.article_id, course_id=course.course_id) }}" method="POST">
+                    <div class="mb-3">
+                        {{ form.csrf_token }}
+                        {{ form.comment_text.label(class='form-label') }}
+                        {{ form.comment_text(class='form-control', style='resize: none;', rows='3') }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+
+                <hr>
+                <div class="comment-list">
+                {% if comments_and_replies|length == 0 %}
+                    <div class="container">
+                            Пока что к статье нет ни одного комментария...
+                     </div>
+                {% else %}
+                    {% for comment, replies in comments_and_replies.items() %}
+                        <div class="comment-item">
+                            <p style="display: inline-block;"><a name="comment-{{ comment.comment_id }}"></a><strong>{{ comment.author.login }}:</strong> {{ comment.comment_text}}</p>
+                            {% if article.author == current_user or current_user.role == 'admin' %}
+                                    <a href="{{ url_for('courses.delete_comment', course_id=course.course_id, article_id=article.article_id, comment_id=comment.comment_id) }}" class="btn btn-sm btn-outline-secondary" role="button" style="display: inline-block;">
+                                                <i class="bi bi-trash"></i></a>
+                            {% endif %}
+
+                            {% if replies|length != 0 %}
+                                {% for reply in replies %}
+                            <div>
+                                <p style="display: inline-block; margin-left: 30px;"><a name="comment-{{ reply.comment_id }}"></a><strong>{{ reply.author.login }}:</strong> {{ reply.comment_text}}</p>
+                                 {% if article.author == current_user or current_user.role == 'admin' %}
+                                        <a href="{{ url_for('courses.delete_comment', course_id=course.course_id, article_id=article.article_id, comment_id=reply.comment_id) }}" class="btn btn-sm btn-outline-secondary" role="button" style="display: inline-block;">
+                                                    <i class="bi bi-trash"></i></a>
+                                {% endif %}
+                            </div>
+                                {% endfor %}
+                                    {% set last_reply = replies | last %}
+                                    {% if current_user == article.author or current_user.role == 'admin' or current_user == comment.author  %}
+                                        {% if not (last_reply.author.role == 'reader' and current_user.role == 'reader')  %}
+                                            <form action="{{ url_for('courses.reply_to_comment', article_id=article.article_id, course_id=course.course_id, comment_id=comment.comment_id) }}"
+                                                  method="POST" style="margin-left: 30px;">
+                                                    <div class="mb-3">
+                                                        {{ form.csrf_token }}
+                                                        {{ form.comment_text(class='form-control', style='resize: none; width: 70%;', rows='2') }}
+                                                    </div>
+                                                    <button type="submit" class="btn btn-info" style="margin-bottom: 15px;">Ответить</button>
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+                            {% else %}
+                                {% if current_user == article.author or current_user.role == 'admin' %}
+                                <form action="{{ url_for('courses.reply_to_comment', article_id=article.article_id, course_id=course.course_id, comment_id=comment.comment_id) }}"
+                                                      method="POST" style="margin-left: 30px;">
+                                                        <div class="mb-3">
+                                                            {{ form.csrf_token }}
+                                                            {{ form.comment_text(class='form-control', style='resize: none; width: 70%;', rows='2') }}
+                                                        </div>
+                                                        <button type="submit" class="btn btn-info" style="margin-bottom: 15px;">Ответить</button>
+                                                </form>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'errors_template.html' %}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.nav-link');
+        const storedTab = localStorage.getItem('activeTab'); // Получаем сохраненную вкладку
+
+        // Функция для получения параметров URL
+        function getParameterByName(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Проверяем наличие параметра active_tab в URL
+        const urlTab = getParameterByName('active_tab');
+
+        // Определяем активную вкладку
+        const activeTab = urlTab || storedTab || tabs[0].getAttribute('href'); // По умолчанию первая вкладка
+
+        tabs.forEach(tab => {
+            tab.classList.remove('active'); // Сбрасываем классы активности
+            const target = document.querySelector(tab.getAttribute('href'));
+            if (target) {
+                target.classList.remove('show', 'active'); // Скрываем все содержимое вкладок
+            }
+
+            // Добавляем слушатель события для переключения вкладок
+            tab.addEventListener('click', function(event) {
+                event.preventDefault(); // Предотвращаем переход по ссылке
+                const href = tab.getAttribute('href');
+                localStorage.setItem('activeTab', href); // Сохраняем активную вкладку
+
+                // Обновляем URL без перезагрузки страницы
+                const url = new URL(window.location);
+                url.searchParams.set('active_tab', href);
+                window.history.pushState({}, '', url);
+
+                // Активируем новую вкладку
+                tabs.forEach(t => {
+                    t.classList.remove('active'); // Сбрасываем классы активности
+                    const target = document.querySelector(t.getAttribute('href'));
+                    if (target) {
+                        target.classList.remove('show', 'active'); // Скрываем все содержимое вкладок
+                    }
+                });
+
+                // Активируем нужную вкладку
+                tab.classList.add('active');
+                document.querySelector(href).classList.add('show', 'active');
+            });
+        });
+
+        // Активируем нужную вкладку при загрузке
+        const activeTabElement = document.querySelector(`.nav-link[href="${activeTab}"]`);
+        if (activeTabElement) {
+            activeTabElement.classList.add('active');
+            document.querySelector(activeTabElement.getAttribute('href')).classList.add('show', 'active');
+        }
+    });
+</script>
+
+{% endblock %}

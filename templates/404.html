@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Страница не найдена {% endblock %}
+
+{% block headExtraContent %}
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/404style.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="error-404-section section-padding">
+        <div class="error">
+            <img src="/static/img/error404.png" alt>
+        </div>
+        <div class="error-message">
+            <h3>Ой! Страница не найдена!</h3>
+            <p>К сожалению мы не можем найти запрошенную вами страницу. Возможно, вы неправильно ввели адрес.</p>
+            <a href="javascript:history.back()" class="theme-btn">Вернуться назад</a>
+        </div>
+    </section>
+{% endblock %}

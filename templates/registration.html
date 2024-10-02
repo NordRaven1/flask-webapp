@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+
+{% block headExtraContent %}
+<style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 500px;
+            margin-top: 100px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .toast {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-header {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-body {
+     border-top: 2px solid #000000;
+    padding: 10px;
+  }
+
+  .btn {
+        width: 462px; /* Ширина кнопки 100% */
+    }
+
+  .btn-close {
+    filter: brightness(0) invert(1);
+  }
+
+  .footer {
+       margin-top: 20px;
+       text-align: center;
+       font-size: 15px;
+     }
+
+     .footer a {
+    text-decoration: none; /* Убирает подчеркивание у ссылок */
+
+}
+    </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+        <h2 class="text-center">Регистрация</h2>
+        <form method="POST">
+
+            {{ form.csrf_token }}
+
+            <div class="mb-3">
+            {{ form.login.label(class='form-label') }}
+            {{ form.login(class='form-control') }}
+        </div>
+        <div class="mb-3">
+            {{ form.email.label(class='form-label') }}
+            {{ form.email(class='form-control') }}
+        </div>
+        <div class="mb-3">
+            {{ form.password.label(class='form-label') }}
+            {{ form.password(class='form-control') }}
+        </div>
+        <div class="mb-3">
+            {{ form.password_repeat.label(class='form-label') }}
+            {{ form.password_repeat(class='form-control') }}
+        </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+        </form>
+</div>
+
+<footer class="footer">
+    <small>Уже зарегистрированы? <a href="/login">Войдите сюда</a></small>
+</footer>
+
+
+{% include 'errors_template.html' %}
+
+{% endblock %}

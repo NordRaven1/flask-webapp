@@ -1,0 +1,32 @@
+{% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                {% for message in messages %}
+                 <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+                     <div class="toast-header">
+                        <div class="rounded me-2" style="width: 20px; height: 20px; background-color: red;"></div>
+                         <strong class="me-auto">Ошибка!</strong>
+                         <small class="text-body-secondary">сейчас</small>
+                         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                     </div>
+                     <div class="toast-body">
+                        {{ message }}
+                     </div>
+                 </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+{% endwith %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+        $(document).ready(function() {
+    $('.toast').each(function() {
+        $(this).toast({
+            autohide: false
+        }).toast('show');
+    });
+});
+    </script>

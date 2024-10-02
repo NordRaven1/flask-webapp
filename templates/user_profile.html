@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль {{ current_user.login }} {% endblock %}
+
+{% block headExtraContent %}
+<style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .tab-pane {
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+        }
+
+        .card-text {
+    height: 25px; /* Или любое значение для ограничения высоты текста */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Для добавления многоточия в конце текста */
+    white-space: nowrap; /* Чтобы текст не переносился */
+}
+
+.bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+
+{% include 'navbar_template.html' %}
+
+<div class="container mt-4">
+
+    <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Профиль</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="favourites-tab" data-bs-toggle="tab" href="#favourites" role="tab" aria-controls="favourites" aria-selected="false">Избранные курсы</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="comments-tab" data-bs-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Комментарии</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <h4>Личная информация</h4>
+            <h2>Логин:   {{ current_user.login }}</h2>
+            <h2>Email:   {{ current_user.email }}</h2>
+            <h2>Роль:   {{ current_user.role }}</h2>
+        </div>
+        <div class="tab-pane fade" id="favourites" role="tabpanel" aria-labelledby="favourites-tab">
+            <h4>Курсы, добавленные в избранное</h4>
+
+            {% if fav_courses|length == 0 %}
+     <p>
+            Вы ещё не добавили ни одного курса в избранное
+        </p>
+    {% else %}
+  <div class="album py-5 bg-light">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+      {% for course in fav_courses %}
+        {% with course=course %}
+            {% include 'fav_course_card.html' %}
+        {% endwith %}
+      {% endfor %}
+
+      </div>
+    </div>
+  </div>
+    {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+            <h4>Ваши комментарии</h4>
+            {% if comments|length == 0 %}
+            <p>
+            Вы ещё не оставили ни одного комментария
+        </p>
+    {% else %}
+             {% for comment in comments %}
+                <div class="container">
+                    <p>
+                        <a href="{{ url_for('courses.link_to_comment', comment_id=comment.comment_id) }}">
+                            {{ comment.comment_text|truncate(30) }}
+                        </a>
+                    </p>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+    </div>
+
+    {% if fav_courses|length != 0 %}
+    <div class="footer" id="footer">
+            <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('accounting.show_profile', page=1) }}">Начальная</a>
+            </li>
+            {% if paginator.previous_page %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('accounting.show_profile', page=page - 1) }}">Предыдущая</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="{{ url_for('accounting.show_profile', page=page - 1) }}">Предыдущая</a>
+            </li>
+            {% endif %}
+            <li class="page-item"><a class="page-link">{{ paginator.target_page }}</a></li>
+            {% if paginator.next_page %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('accounting.show_profile', page=page + 1) }}">Следующая</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="{{ url_for('accounting.show_profile', page=page + 1) }}">Следующая</a>
+            </li>
+            {% endif %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('accounting.show_profile', page=paginator.amount_of_pages) }}">Последняя</a>
+            </li>
+                </ul>
+            </nav>
+    </div>
+    {% endif %}
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const footer = document.getElementById('footer');
+
+        // Скрываем футер по умолчанию
+        footer.style.display = 'none';
+
+        // Определяем активную вкладку
+        const activeTab = localStorage.getItem('activeTab');
+
+        // Если вкладка не сохранена, открываем "Профиль"
+        if (!activeTab) {
+            document.getElementById('profile-tab').click(); // Открываем вкладку "Профиль"
+        } else {
+            // Иначе открываем вкладку, сохраненную в Local Storage
+            const tabButton = document.querySelector(`.nav-link[id='${activeTab}-tab']`);
+            if (tabButton) {
+                tabButton.click();
+            } else {
+                // Если вкладка не найдена в Local Storage, открываем вкладку "Профиль"
+                document.getElementById('profile-tab').click();
+            }
+        }
+
+        // Сохраняем вкладку в Local Storage при клике и управляем футером
+        document.querySelectorAll('.nav-link').forEach(tab => {
+            tab.addEventListener('click', () => {
+                localStorage.setItem('activeTab', tab.id.replace('-tab', ''));
+
+                // Управляем отображением футера
+                if (tab.id === 'favourites-tab') {
+                    footer.style.display = 'block'; // Показываем футер
+                } else {
+                    footer.style.display = 'none'; // Скрываем футер
+                }
+            });
+        });
+
+        // Инициализация на загрузке для футера
+        if (activeTab === 'favourites') {
+            footer.style.display = 'block'; // Если вкладка "Избранное", показываем футер
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+
+{% block title %}Вход в аккаунт{% endblock %}
+
+{% block headExtraContent %}
+<style>
+        body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4; /* Фоновый цвет страницы */
+        display: flex;
+        justify-content: center; /* Центрируем содержимое по горизонтали */
+        align-items: center; /* Центрируем содержимое по вертикали */
+        height: 100vh; /* Высота на весь экран */
+        margin: 0; /* Убираем отступы по умолчанию */
+    }
+    .login-container {
+        background-color: #fff; /* Цвет фона для контейнера */
+        padding: 30px; /* Уменьшены паддинги для контейнера */
+        border-radius: 0.5rem; /* Скругленные углы */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Тень для контейнера */
+        width: 100%; /* Ширина 100% для мобильных */
+        max-width: 340px; /* Максимальная ширина уменьшена до 300px */
+        display: flex;
+        flex-direction: column; /* Ориентация элементов по вертикали */
+        align-items: center; /* Центруем содержимое */
+    }
+    h2 {
+        text-align: center; /* Выравнивание заголовка по центру */
+    color: #333; /* Цвет текста заголовка - черный */
+    margin-bottom: 0.7rem;
+    font-weight: bold; /* Жирный текст */
+    font-size: 1.5rem;
+    }
+    .form-label {
+        color: #666; /* Цвет текста меток */
+    }
+    .btn {
+        background-color: #5cb85c; /* Цвет кнопки */
+        color: white; /* Цвет текста кнопки */
+        padding: 0.4rem 1rem; /* Паддинги для кнопки */
+        border: none; /* Убираем стандартную рамку */
+        border-radius: 0.25rem; /* Скругленные углы для кнопки */
+        cursor: pointer; /* Изменяем курсор при наведении */
+        width: 220px; /* Ширина кнопки 100% */
+        transition: background-color 0.3s; /* Плавный переход для фона */
+    }
+    .btn:hover {
+        background-color: #4cae4c; /* Цвет кнопки при наведении */
+    }
+    .footer {
+        text-align: center; /* Выравнивание текста по центру */
+        margin-top: 10px; /* Отступ сверху */
+    }
+
+     .toast {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-header {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-body {
+     border-top: 2px solid #000000;
+    padding: 10px;
+  }
+
+  .btn-close {
+    filter: brightness(0) invert(1);
+  }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="login-container">
+    <h2 class="text-center mb-3">Вход в аккаунт</h2>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div class="mb-3">
+            {{ form.email.label(class='form-label') }}
+             {{ form.email(class='form-control') }}
+        </div>
+        <div class="mb-3">
+            {{ form.password.label(class='form-label') }}
+            {{ form.password(class='form-control') }}
+        </div>
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+</div>
+
+{% include 'errors_template.html' %}
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Список курсов{% endblock %}
+
+{% block headExtraContent %}
+<style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      .card-text {
+    height: 25px; /* Или любое значение для ограничения высоты текста */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Для добавления многоточия в конце текста */
+    white-space: nowrap; /* Чтобы текст не переносился */
+}
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      .footer-text {
+    font-size: 0.8rem; /* Или любое другое значение по вашему выбору */
+}
+    </style>
+{% endblock %}
+
+{% block content %}
+
+{% include 'navbar_template.html' %}
+
+<main>
+<section style="text-align: right;">
+  {% if current_user.role == 'author' %}
+  <a href="{{ url_for('courses.create_course') }}" class="btn btn-sm btn-outline-secondary mt-2" role="button">
+    Создать новый курс <i class="bi bi-plus-square"></i></a>
+  {% endif %}
+</section>
+
+
+    {% if courses|length == 0 %}
+     <div class="container border">
+            Как-то здесь пустовато... Нет ни одного курса
+        </div>
+    {% else %}
+  <div class="album py-5 bg-light">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+      {% for course in courses %}
+        {% with course=course, fav_ids=fav_ids %}
+            {% include 'course_card.html' %}
+        {% endwith %}
+      {% endfor %}
+
+      </div>
+    </div>
+  </div>
+    {% endif %}
+</main>
+
+<footer class="text-muted py-5">
+  <div class="container d-flex justify-content-between align-items-start">
+    <div class="footer-text">
+      <p class="mb-1">Сайт является объектом интеллектуальной собственности NordRaven&trade;</p>
+      <p class="mb-0">По всем вопросам обращайтесь на почту boxforfunandjoke@mail.ru</p>
+    </div>
+
+
+    <nav aria-label="Page navigation" class="flex-grow-1 text-center me-5">
+      <ul class="pagination justify-content-center">
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_courses', page=1, title=title_to_find, description=description_to_find) }}">Начальная</a>
+        </li>
+        {% if paginator.previous_page %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_courses', page=page - 1, title=title_to_find, description=description_to_find) }}">Предыдущая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="{{ url_for('courses.show_courses', page=page - 1, title=title_to_find, description=description_to_find ) }}">Предыдущая</a>
+        </li>
+        {% endif %}
+        <li class="page-item"><a class="page-link">{{ paginator.target_page }}</a></li>
+        {% if paginator.next_page %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_courses', page=page + 1, title=title_to_find, description=description_to_find) }}">Следующая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="{{ url_for('courses.show_courses', page=page + 1, title=title_to_find, description=description_to_find) }}">Следующая</a>
+        </li>
+        {% endif %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_courses', page=paginator.amount_of_pages, title=title_to_find, description=description_to_find) }}">Последняя</a>
+        </li>
+      </ul>
+    </nav>
+
+
+    <form class="d-flex" action="{{ url_for('courses.show_courses') }}" method="GET">
+    <div class="d-flex flex-column me-2">
+        <input type="text" name="title" placeholder="По названию" class="form-control mb-2" aria-label="Поиск" value="{{ title_to_find }}">
+        <input type="text" name="description" placeholder="По описанию" class="form-control" aria-label="Поиск" value="{{ description_to_find }}">
+    </div>
+    <button class="btn btn-outline-primary" type="submit">Найти</button>
+</form>
+
+  </div>
+</footer>
+{% endblock %}

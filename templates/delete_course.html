@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Форма для удаления курса{% endblock %}
+
+
+{% block headExtraContent %}
+ <style>
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Высота на весь экран */
+        }
+        .form-card {
+            border: 1px solid #dee2e6; /* Рамка формы */
+            padding: 2rem; /* Отступ внутри формы */
+            border-radius: 0.5rem; /* Скругление углов */
+            background-color: #fff; /* Цвет фона */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Тень */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+{% include 'navbar_template.html' %}
+
+<div class="form-container">
+    <div class="form-card">
+<form method="POST">
+    {{ form.csrf_token }}
+        <h2>Вы точно хотите удалить курс {{ course.course_title }} ?</h2>
+
+        <div class="mb-3">
+            <label class="form-label">Автор: {{ course.author.login }}</label>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Количество статей: {{ articles_count }}</label>
+        </div>
+
+        <div class="mb-3">
+            {{ form.user_agreement() }}
+            {{ form.user_agreement.label }}
+        </div>
+
+        {% if check %}
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <div>
+                    Если вы хотите удалить данный курс, вам необходимо поставить галочку выше
+                </div>
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Удалить курс</button>
+    </form>
+    </div>
+</div>
+{% endblock %}

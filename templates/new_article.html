@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Добавление новой статьи{% endblock %}
+
+{% block headExtraContent %}
+<style>
+.toast {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-header {
+    background-color: #343a40;
+    color: white;
+  }
+
+  .toast-body {
+     border-top: 2px solid #000000;
+    padding: 10px;
+  }
+
+  .btn-close {
+    filter: brightness(0) invert(1);
+  }
+  </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5">
+        <h1 class="mb-4">Создание новой статьи</h1>
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+
+            <div class="mb-3">
+                {{ form.article_title.label(class="form-label") }}
+                {{ form.article_title(class="form-control") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.article_text.label(class="form-label") }}
+                {{ form.article_text(class="form-control", style='resize: none;', rows=5) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.cover_image.label(class="form-label") }}
+                {{ form.cover_image(class="form-control") }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Создать статью</button>
+        </form>
+    </div>
+
+{% include 'errors_template.html' %}
+
+{% endblock %}

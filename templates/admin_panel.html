@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %} Админ-Панель {% endblock %}
+
+{% block content %}
+
+{% include 'navbar_template.html' %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Login</th>
+        <th scope="col">Email</th>
+        <th scope="col">Роль</th>
+        <th scope="col">Взаимодействие</th>
+    </tr>
+    </thead>
+    <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{user.login}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.role}}</td>
+                {% if user.role == 'reader' %}
+                    <td><a class="btn btn-info" href="{{ url_for('accounting.make_author_from_reader', user_id=user.user_id) }}">
+                        Повысить</a></td>
+                {% else %}
+                <td><a class="btn btn-danger" href="{{ url_for('accounting.make_reader_from_author', user_id=user.user_id) }}">
+                        Понизить</a></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

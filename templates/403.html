@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Доступ запрещён {% endblock %}
+
+{% block headExtraContent %}
+<link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/403style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center">
+    <div class="message">Вы не авторизованы.</div>
+    <div class="message2">Вы попытались получить доступ к странице, для которой необходимо <a href="{{ url_for('accounting.login') }}">войти в аккаунт</a>.</div>
+    <div class="neon">403</div>
+    <div class="door-frame">
+      <div class="door">
+        <div class="rectangle"></div>
+        <div class="handle"></div>
+        <div class="window">
+          <div class="eye"></div>
+          <div class="eye eye2"></div>
+          <div class="leaf"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

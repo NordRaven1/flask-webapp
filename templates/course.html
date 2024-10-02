@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+
+{% block title %}Курс {{ course.course_title }} {% endblock %}
+
+{% block headExtraContent %}
+<style>
+        .card {
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .accordion-button:focus {
+  box-shadow: none;
+}
+
+.accordion-body {
+  background-color: #f8f9fa; /* Светло-серый цвет */
+}
+
+ img {
+    width: 400px; /* Ограничиваем ширину */
+    height: 200px; /* Ограничиваем высоту */
+    object-fit: cover; /* Используем object-fit для изменения отображения */
+  }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+{% include 'navbar_template.html' %}
+
+<div class="accordion" id="accordionExample">
+<div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+        Описание курса
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+       {{ course.description }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <a href="{{ url_for('courses.show_courses') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle-fill"></i> Назад к списку курсов</a>
+     {% if course.author == current_user %}
+            <a href="{{ url_for('courses.create_article', course_id=course.course_id) }}" class="btn btn-sm btn-outline-secondary" role="button">
+    Создать новую статью <i class="bi bi-plus-square"></i></a>
+    {% endif %}
+</div>
+
+
+
+<div class="container mt-5">
+    <h1 class="text-center">Статьи курса</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            {% if articles|length == 0 %}
+            Как-то здесь пустовато... Нет ни одной статьи
+    {% else %}
+             {% for article, image in articles|zip(images) %}
+        {% with article=article, course=course, image=image, index=loop.index, page=page %}
+            {% include 'article_card.html' %}
+        {% endwith %}
+      {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+<footer class="text-muted py-5">
+  <div class="container d-flex justify-content-between align-items-start">
+      <nav aria-label="Page navigation" class="flex-grow-1 text-center me-6">
+      <ul class="pagination justify-content-center">
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_course_page', course_id=course.course_id, page=1) }}">Начальная</a>
+        </li>
+        {% if paginator.previous_page %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_course_page', course_id=course.course_id, page=page - 1) }}">Предыдущая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="{{ url_for('courses.show_course_page', course_id=course.course_id, page=page - 1) }}">Предыдущая</a>
+        </li>
+        {% endif %}
+        <li class="page-item"><a class="page-link">{{ paginator.target_page }}</a></li>
+        {% if paginator.next_page %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_course_page', course_id=course.course_id, page=page + 1) }}">Следующая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" href="{{ url_for('courses.show_course_page', course_id=course.course_id, page=page + 1) }}">Следующая</a>
+        </li>
+        {% endif %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('courses.show_course_page', course_id=course.course_id, page=paginator.amount_of_pages) }}">Последняя</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+{% endif %}
+{% endblock %}

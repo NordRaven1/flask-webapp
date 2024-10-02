@@ -1,0 +1,40 @@
+<div class="col">
+    <a href="{{ url_for('courses.show_course_page', course_id=course.course_id) }}" class="text-decoration-none text-dark">
+        <div class="card shadow-sm">
+            <svg
+                class="bd-placeholder-img card-img-top"
+                width="100%" height="225"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Placeholder: Thumbnail"
+                preserveAspectRatio="xMidYMid slice"
+                focusable="false">
+                <title>{{ course.course_title }}</title>
+                <rect width="100%" height="100%" fill="#55595c"/>
+                <text x="50%" y="50%" fill="#eceeef" dy=".3em">{{ course.course_title }}</text>
+            </svg>
+            <div class="card-body">
+                <p class="card-text">{{ course.description }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    {% if current_user.is_authenticated %}
+                   <div class="ms-auto btn-group">
+                       {% if course.course_id in fav_ids %}
+                        <a href="{{ url_for('courses.unfavourite_course', course_id=course.course_id) }}" class="btn btn-sm btn-outline-secondary" role="button">
+                        <i class="bi bi-bookmarks-fill"></i></a>
+                       {% else %}
+                        <a href="{{ url_for('courses.add_course_to_favourites', course_id=course.course_id) }}" class="btn btn-sm btn-outline-secondary" role="button">
+                        <i class="bi bi-bookmarks"></i></a>
+                       {% endif %}
+                        {% if course.author == current_user or current_user.role == 'admin' %}
+                    <a href="{{ url_for('courses.edit_course', course_id=course.course_id) }}" class="btn btn-sm btn-outline-secondary" role="button">
+                        <i class="bi bi-pencil"></i></a>
+                    <a href="{{ url_for('courses.delete_course', course_id=course.course_id) }}" class="btn btn-sm btn-outline-secondary" role="button">
+                        <i class="bi bi-trash"></i></a>
+                       {% endif %}
+                </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </a>
+</div>

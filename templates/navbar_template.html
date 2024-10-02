@@ -1,0 +1,46 @@
+<header>
+  <div class="collapse bg-dark" id="navbarHeader">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8 col-md-7 py-4">
+          <h4 class="text-white">О проекте</h4>
+          <p class="text-muted">Данный сайт представляет собой реализацию идеи сборника текстовых версий подкастов
+            некоего приложения(как, например, Arzamas). Зарегистрированные читатели могут заходить на курсы, читать
+            статьи и комментировать их. Авторы могут создавать новые курсы со статьями, отвечать читателям.</p>
+             <ul class="list-unstyled">
+              <li><a href="{{ url_for('index') }}" class="text-white">На главную</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-4 offset-md-1 py-4">
+             {% if current_user.is_authenticated %}
+            <h4 class="text-white">{{ current_user.login }} <span class="navbar-text">
+                <a class="btn btn-outline-danger me-2" style="color: white;" href="{{ url_for('accounting.logout') }}">Выйти</a>
+            </span></h4>
+            {% else %}
+          <h4 class="text-white">Гость</h4>
+            {% endif %}
+          <ul class="list-unstyled">
+              {% if current_user.is_authenticated %}
+              <li><a href="{{ url_for('accounting.show_profile') }}" class="text-white">Личный кабинет</a></li>
+              {% if current_user.role == 'admin' %}
+              <li><a href="{{ url_for('accounting.show_admin_panel') }}" class="text-white">Панель админа</a></li>
+              {% endif %}
+            {% else %}
+              <li><a href="{{ url_for('accounting.registration') }}" class="text-white">Пожалуйста, войдите или зарегистрируйтесь!</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <div class="d-flex justify-content-end w-100">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+</div>
+</header>
